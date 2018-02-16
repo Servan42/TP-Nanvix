@@ -634,7 +634,13 @@ int main(int argc, char **argv)
 			printf("  Result [%s]\n",
 				(!fpu_test()) ? "PASSED" : "FAILED");
 		}
-	
+
+		/* Infinite loop */
+		else if (!strcmp(argv[i], "loop"))
+		{
+			while(1);
+		}
+		
 	
 		/* Wrong usage. */
 		else

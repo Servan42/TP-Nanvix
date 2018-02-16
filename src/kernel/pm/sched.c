@@ -96,24 +96,64 @@ PUBLIC void yield(void)
 		
 		/*
 		 * Process with higher
-		 * waiting time found.
+		 * priority found.
+		 * which is not last_proc
 		 */
-		if (p->counter > next->counter)
+		if (p->priority > next->priority /*&& p != last_proc*/)
 		{
-			next->counter++;
+			if(next != IDLE) {
+				next->priority++;
+				next->counter++;
+			}
 			next = p;
 		}
-			
+
+		/*
+		 * Process with higher
+		 * nice found.
+		 * which is not last_proc
+		 */
+		else if (p->priority == next->priority && p->nice > next->nice /*&& p != last_proc*/)
+		{
+			if(next != IDLE) {
+				next->priority++;
+				next->counter++;
+			}
+			next = p;
+		}
+
+		/*
+		 * Process with higher
+		 * waiting time found.
+		 * which is not last_proc
+		 */
+		else if (p->priority == next->priority && p->nice == next->nice && p->counter > next->counter /*&& p != last_proc*/)
+		{
+			if(next != IDLE) {
+				next->priority++;
+				next->counter++;
+			}
+			next = p;
+		}
+
 		/*
 		 * Increment waiting
-		 * time of process.
+		 * time and priority
+		 * of process.
 		 */
-		else
-			p->counter++;
+		else{
+			if(p != IDLE){
+				p->priority++;
+				p->counter++;
+			}
+		}
+
+
 	}
 	
 	/* Switch to next process. */
-	next->priority = PRIO_USER;
+	next->priority -= (next->counter);
+	if(next->priority < -100) next->priority = -100;
 	next->state = PROC_RUNNING;
 	next->counter = PROC_QUANTUM;
 	switch_to(next);
