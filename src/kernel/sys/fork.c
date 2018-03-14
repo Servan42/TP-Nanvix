@@ -110,6 +110,7 @@ found:
 	}
 	
 	/* Initialize process. */
+	proc->last = 0;
 	proc->intlvl = INT_LVL_5;
 	proc->received = 0;
 	proc->restorer = curr_proc->restorer;

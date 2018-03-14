@@ -51,42 +51,80 @@ static unsigned flags = VERBOSE | FULL;
  */
 static int swap_test(void)
 {
-	#define N 1280
+	// #define N 1280
+	#define N 1024
 	int *a, *b, *c;
 	clock_t t0, t1;
 	struct tms timing;
+	int per=0, perlast=0;
+
+	printf("Debut de test swp\n");
 
 	/* Allocate matrices. */
 	if ((a = malloc(N*N*sizeof(int))) == NULL)
 		goto error0;
+	printf("Martice a allouee.\n");
 	if ((b = malloc(N*N*sizeof(int))) == NULL)
 		goto error1;
+	printf("Martice b allouee.\n");
 	if ((c = malloc(N*N*sizeof(int))) == NULL)
 		goto error2;
+	printf("Martice c allouee.\n");
+
+	fflush(stdin);
+	fflush(stdout);
 		
 	t0 = times(&timing);
 	
+	printf("Init : ");
+	fflush(stdin);
+	fflush(stdout);
 	/* Initialize matrices. */
 	for (int i = 0; i < N*N; i++)
 	{
 		a[i] = 1;
 		b[i] = 1;
 		c[i] = 0;
+		per = i*100/(N*N);
+		if(per != perlast){
+			printf("I-%d ",per);
+			fflush(stdin);
+			fflush(stdout);
+			perlast = per;
+		} 
 	}
-	
+
+
+	printf("\nMatrices initialisees.\nMult : ");
+	fflush(stdin);
+	fflush(stdout);
+
+	per=0; 
+	perlast=0;
 	/* Multiply matrices. */
 	if (flags & (EXTENDED | FULL))
 	{	
 		for (int i = 0; i < N; i++)
 		{
 			for (int j = 0; j < N; j++)
-			{
-					
-				for (int k = 0; k < N; k++)
+			{	
+				for (int k = 0; k < N; k++){
 					c[i*N + j] += a[i*N + k]*b[k*N + j];
+				}
+			}
+			per = i*100/N;
+			if(per != perlast){
+				printf("M-%d ",per);
+				fflush(stdin);
+				fflush(stdout);
+				perlast = per;
 			}
 		}
 	}
+
+	printf("\nMultiplication termine.\n");
+	fflush(stdin);
+	fflush(stdout);
 	
 	/* Check values. */
 	if (flags & FULL)
@@ -97,6 +135,10 @@ static int swap_test(void)
 				goto error3;
 		}
 	}
+
+	printf("Check termine.\n");
+	fflush(stdin);
+	fflush(stdout);
 	
 	/* House keeping. */
 	free(a);
@@ -603,8 +645,11 @@ int main(int argc, char **argv)
 		else if (!strcmp(argv[i], "swp"))
 		{
 			printf("Swapping Test\n");
-			printf("  Result:             [%s]\n",
-				(!swap_test()) ? "PASSED" : "FAILED");
+			// printf("  Result:             [%s]\n",
+			// 	(!swap_test()) ? "PASSED" : "FAILED");
+			int retvalue = -1;
+			retvalue = swap_test();
+			if(retvalue == 0) printf("PASSED\n"); else printf("FAILED\n");
 		}
 		
 		/* Scheduling test. */

@@ -59,8 +59,8 @@
 		unsigned writable :  1; /* Writable page?     */
 		unsigned user     :  1; /* User page?         */
 		unsigned          :  2; /* Reserved.          */
-		unsigned accessed :  1; /* Accessed?          */
-		unsigned dirty    :  1; /* Dirty?             */
+		unsigned accessed :  1; /* Accessed? ref bit  */
+		unsigned dirty    :  1; /* Dirty?    mod bit  */
 		unsigned          :  2; /* Reserved.          */
 		unsigned cow      :  1; /* Copy on write?     */
 		unsigned zero     :  1; /* Demand zero?       */

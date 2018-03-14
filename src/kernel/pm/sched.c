@@ -66,6 +66,7 @@ PUBLIC void yield(void)
 {
 	struct process *p;    /* Working process.     */
 	struct process *next; /* Next process to run. */
+//	struct process *prior; /* Process with the highest priority */
 
 	/* Re-schedule process for execution. */
 	if (curr_proc->state == PROC_RUNNING)
@@ -88,72 +89,34 @@ PUBLIC void yield(void)
 
 	/* Choose a process to run next. */
 	next = IDLE;
+//	prior = IDLE;
 	for (p = FIRST_PROC; p <= LAST_PROC; p++)
-	{
-		/* Skip non-ready process. */
+	{		/* Skip non-ready process. */
 		if (p->state != PROC_READY)
 			continue;
-		
-		/*
-		 * Process with higher
-		 * priority found.
-		 * which is not last_proc
-		 */
-		if (p->priority > next->priority /*&& p != last_proc*/)
-		{
-			if(next != IDLE) {
-				next->priority++;
-				next->counter++;
-			}
-			next = p;
-		}
-
-		/*
-		 * Process with higher
-		 * nice found.
-		 * which is not last_proc
-		 */
-		else if (p->priority == next->priority && p->nice > next->nice /*&& p != last_proc*/)
-		{
-			if(next != IDLE) {
-				next->priority++;
-				next->counter++;
-			}
-			next = p;
-		}
 
 		/*
 		 * Process with higher
 		 * waiting time found.
-		 * which is not last_proc
 		 */
-		else if (p->priority == next->priority && p->nice == next->nice && p->counter > next->counter /*&& p != last_proc*/)
+		if (p->counter > next->counter)
 		{
-			if(next != IDLE) {
-				next->priority++;
-				next->counter++;
-			}
+			next->counter++;
 			next = p;
 		}
-
+			
 		/*
 		 * Increment waiting
-		 * time and priority
-		 * of process.
+		 * time of process.
 		 */
-		else{
-			if(p != IDLE){
-				p->priority++;
-				p->counter++;
-			}
-		}
+		else
+			p->counter++;
 
 
 	}
 	
 	/* Switch to next process. */
-	next->priority -= (next->counter);
-	if(next->priority < -100) next->priority = -100;
+	next->priority = PRIO_USER;
 	next->state = PROC_RUNNING;
 	next->counter = PROC_QUANTUM;
 	switch_to(next);

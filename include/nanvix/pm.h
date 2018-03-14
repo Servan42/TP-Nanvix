@@ -150,6 +150,7 @@
 		struct pde *pgdir;                 /**< Page directory.         */
 		struct pregion pregs[NR_PREGIONS]; /**< Process memory regions. */
 		size_t size;                       /**< Process size.           */
+		int last;
 		/**@}*/
 
 		/**
@@ -205,6 +206,7 @@
 		struct process *next;    /**< Next process in a list. */
 		struct process **chain;  /**< Sleeping chain.         */
 		/**@}*/
+
 	};
 	
 	/* Forward definitions. */
