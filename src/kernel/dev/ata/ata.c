@@ -644,6 +644,7 @@ ata_sched_raw(unsigned atadevid, block_t num, void *buf, size_t size, unsigned f
 /*
  * Reads a block from a ATA device.
  */
+#if 0
 PRIVATE int ata_readblk(unsigned minor, buffer_t buf)
 {
 	struct atadev *dev;
@@ -662,6 +663,26 @@ PRIVATE int ata_readblk(unsigned minor, buffer_t buf)
 	
 	return (0);
 }
+#else
+PRIVATE int ata_readblk(unsigned minor, buffer_t buf)
+{
+	struct atadev *dev;
+	
+	/* Invalid minor device. */
+	if (minor >= 4)
+		return (-EINVAL);
+	
+	dev = &ata_devices[minor];
+	
+	/* Device not valid. */
+	if (!(dev->flags & ATADEV_VALID))
+		return (-EINVAL);
+	
+	ata_sched_buffered(minor, buf, REQ_BUF);
+	
+	return (0);
+}
+#endif
 
 /*
  * Writes a block to a ATA device.

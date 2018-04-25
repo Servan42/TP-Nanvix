@@ -303,6 +303,7 @@ PUBLIC void brelse(struct buffer *buf)
  * @note The device number should be valid.
  * @note The block number should be valid.
  */
+#if 0
 PUBLIC struct buffer *bread(dev_t dev, block_t num)
 {
 	struct buffer *buf;
@@ -321,6 +322,35 @@ PUBLIC struct buffer *bread(dev_t dev, block_t num)
 	
 	return (buf);
 }
+#else
+PUBLIC struct buffer *bread(dev_t dev, block_t num)
+{
+	struct buffer *buf, *buf2;
+	
+	buf = getblk(dev, num);
+	
+	/* Valid buffer? */
+	if (buf->flags & BUFFER_VALID)
+		return (buf);
+
+	bdev_readblk(buf);
+
+	/* Update buffer flags. */
+	buf->flags |= BUFFER_VALID;
+	buf->flags &= ~BUFFER_DIRTY;
+
+	buf2 = buf->free_next;
+	while(buf2 != NULL){
+		bdev_readblk(buf2);
+		buf->flags |= BUFFER_VALID;
+		buf->flags &= ~BUFFER_DIRTY;
+		buf2 = buf2->free_next;
+	}
+	
+	return (buf);
+}
+
+#endif
 
 /**
  * @brief Writes a block buffer to the underlying device.

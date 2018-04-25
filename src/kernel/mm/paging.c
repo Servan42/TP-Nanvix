@@ -292,7 +292,7 @@ PRIVATE struct
  * @returns Upon success, the number of the frame is returned. Upon failure, a
  *          negative number is returned instead.
  */
-#if 1
+#if 0
 int page_def_number = 0;
 PRIVATE int allocf(void){
 	int i;      /* Loop index.  */
@@ -389,7 +389,7 @@ PRIVATE int allocf(void)
 		return (-1);
 	
 	page_def_number++;
-	kprintf("D-%d", page_def_number);
+	//kprintf("D-%d", page_def_number);
 	/* Swap page out. */
 	if (swap_out(curr_proc, frames[i = oldest].addr))
 		return (-1);
